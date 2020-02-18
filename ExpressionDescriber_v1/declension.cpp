@@ -1,11 +1,6 @@
 #include "declension.h"
 
 
-
-
-
-
-
 Declension::Declension()
 {
 }

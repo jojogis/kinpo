@@ -8,7 +8,7 @@ QTextStream cin(stdin);
 
 QHash<QString,QString> readDescribe(QString fileName);
 QJsonObject readTree(QString jsonFileName);
-QString treeWalker(QJsonObject obj,bool isRoot);
+QString treeWalker(QJsonObject obj,Declension::Declensions decl);
 bool useDecl = false;
 Declension decl;
 QHash<QString,QString> desc;
@@ -52,36 +52,33 @@ int main(int argc, char *argv[])
         return exep;
     }
 
-    qDebug() << treeWalker(tree,true);
+    qDebug() << treeWalker(tree,Declension::I);
 
 
     return a.exec();
 }
 
-QString treeWalker(QJsonObject obj,bool isRoot){
+QString treeWalker(QJsonObject obj,Declension::Declensions currentDecl){
     qDebug() << obj.value("content").toString();
     //если текущий объект - листок
     if(obj.value("child") == QJsonValue::Undefined){
         if(useDecl){
             QString descEl = desc.value(obj.value("content").toString());
-            return decl.getDeclension(descEl,Declension::Declensions::R);
+
+            return decl.getDeclension(descEl, currentDecl);
         }else{
             QString descEl = desc.value(obj.value("content").toString());
             return descEl;
         }
     //иначе, если не листок
     }else{
-        //если корень
-        if(isRoot){
-            return operators.operatorsIDecl.value(obj.value("content").toString()) + " "+
-                treeWalker(obj.value("child").toArray().takeAt(0).toObject(),false)+ " и " +
-                treeWalker(obj.value("child").toArray().takeAt(1).toObject(),false);
-        //если не корень
-        }else{
-            return operators.operatorsRDecl.value(obj.value("content").toString()) + " "+
-                treeWalker(obj.value("child").toArray().takeAt(0).toObject(),false)+ " и " +
-                treeWalker(obj.value("child").toArray().takeAt(1).toObject(),false);
-        }
+        QString operat = obj.value("content").toString();
+        QString prep = operators.operatorsPrepositions.value(operat);
+        Preposition prepDecls = operators.prepositions.value(prep);
+        return operators.getOperatorByDecl(operat,currentDecl) + " "+
+            treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev)+
+                    " "+ prep +" "+
+            treeWalker(obj.value("child").toArray().takeAt(1).toObject(),prepDecls.declNext);
     }
 
 }
