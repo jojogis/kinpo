@@ -62,23 +62,38 @@ QString treeWalker(QJsonObject obj,Declension::Declensions currentDecl){
     qDebug() << obj.value("content").toString();
     //если текущий объект - листок
     if(obj.value("child") == QJsonValue::Undefined){
-        if(useDecl){
-            QString descEl = desc.value(obj.value("content").toString());
-
-            return decl.getDeclension(descEl, currentDecl);
+        QString el = obj.value("content").toString();
+        //если есть описание для данного элемента
+        if(desc.contains(el)){
+            QString descEl = desc.value(el);
+            if(useDecl){
+                return decl.getDeclension(descEl, currentDecl);
+            }else{
+                return descEl;
+            }
         }else{
-            QString descEl = desc.value(obj.value("content").toString());
-            return descEl;
+            //иначе возвращаем имя элемента
+            return el;
         }
     //иначе, если не листок
     }else{
         QString operat = obj.value("content").toString();
-        QString prep = operators.operatorsPrepositions.value(operat);
-        Preposition prepDecls = operators.prepositions.value(prep);
-        return operators.getOperatorByDecl(operat,currentDecl) + " "+
-            treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev)+
-                    " "+ prep +" "+
-            treeWalker(obj.value("child").toArray().takeAt(1).toObject(),prepDecls.declNext);
+        //если оператор - стандартный
+        if(operators.operatorsPrepositions.contains(operat)){
+            QString prep = operators.operatorsPrepositions.value(operat);
+            Preposition prepDecls = operators.prepositions.value(prep);
+
+            //TODO переписать:
+            if(obj.value("child").toArray().count() == 2){
+                return operators.getOperatorByDecl(operat,currentDecl) + " "+
+                        treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev)+
+                        " "+ prepDecls.text +" "+
+                        treeWalker(obj.value("child").toArray().takeAt(1).toObject(),prepDecls.declNext);
+            }else if(obj.value("child").toArray().count() == 1){
+                return operators.getOperatorByDecl(operat,currentDecl) + " "+
+                        treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev);
+            }
+        }
     }
 
 }
