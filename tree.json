@@ -1,0 +1,14 @@
+{
+    "content":"&",
+    "child":[
+        {
+        "content":"*",
+        "child":[{"content":"z"},{"content":"y"}]
+        },{
+        "content":"*",
+        "child":[{
+            "content":"[]",
+            "child":[{"content":"array"},{"content":"x"}]
+        }
+        ,{"content":"x"}]
+        }]}

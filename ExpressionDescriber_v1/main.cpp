@@ -19,15 +19,28 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     setlocale(LC_ALL,"Russian");
     //ввод данных
-    qDebug() << "введите файл с деревом";
     QString fileJson;
-    cin >> fileJson;
+    if(argc < 2){
+        qDebug() << "введите файл с деревом";
+        cin >> fileJson;
+    }else{
+        fileJson = QString(argv[1]);
+    }
     QString fileDescribe;
+    if(argc < 3){
     qDebug() << "введите файл с описанием";
     cin >> fileDescribe;
-    qDebug() << "использовать склонение? y/n";
+    }else{
+        fileDescribe = QString(argv[2]);
+    }
     QString useDeclStr;
-    cin >> useDeclStr;
+    if(argc < 4){
+        qDebug() << "использовать склонение? y/n";
+        cin >> useDeclStr;
+    }else{
+        useDeclStr = QString(argv[3]);
+    }
+
     if(useDeclStr == "y" || useDeclStr == ""){
         useDecl = true;
     }else{
@@ -38,15 +51,16 @@ int main(int argc, char *argv[])
     //читаем дерево
     QJsonObject tree;
     try {
-        tree = readTree("C:\\Users\\alexe\\Desktop\\kinpo\\build-ExpressionDescriber_v1-Desktop_Qt_5_12_2_MSVC2017_64bit-Debug\\debug\\tree.json");
+        tree = readTree(a.applicationDirPath()+"/tree.json");
     } catch (int exep) {
         if(exep == 1)qDebug() << "Ошибка открытия файла с деревом";
+        if(exep == 2)qDebug() << "Ошибка разбора файла с деревом";
         return exep;
     }
 
     //читаем описание
     try {
-        desc = readDescribe("C:\\Users\\alexe\\Desktop\\kinpo\\build-ExpressionDescriber_v1-Desktop_Qt_5_12_2_MSVC2017_64bit-Debug\\debug\\desc.txt");
+        desc = readDescribe(a.applicationDirPath()+"/desc.txt");
     } catch (int exep) {
         if(exep == 10)qDebug() << "Ошибка открытия файла с описанием";
         return exep;
@@ -121,8 +135,6 @@ QHash<QString,QString> readDescribe(QString fileName){
 */
 QJsonObject readTree(QString jsonFileName){
     //парсим дерево
-    QFileInfo fileInfo(jsonFileName);   // С помощью QFileInfo
-    QDir::setCurrent(fileInfo.path());  // установим текущую рабочую директорию, где будет файл
     // Создаём объект файла и открываем его на чтение
     QFile jsonFile(jsonFileName);
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -133,6 +145,9 @@ QJsonObject readTree(QString jsonFileName){
     QString saveData = jsonFile.readAll();
     // Создаём QJsonDocument
     QJsonDocument jsonDocument(QJsonDocument::fromJson(saveData.toUtf8()));
+    if(jsonDocument.isNull()){
+        throw 2;
+    }
     // Из которого выделяем объект в текущий рабочий QJsonObject
     return jsonDocument.object();
 }

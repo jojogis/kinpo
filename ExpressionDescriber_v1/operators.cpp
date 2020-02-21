@@ -6,6 +6,7 @@ Operators::Operators()
     prepositions.insert("на",{Declension::R,Declension::V,"на"});
     prepositions.insert("над",{Declension::T,Declension::T,"и"});
     prepositions.insert("унарный",{Declension::R,Declension::R,""});
+    prepositions.insert("индекс",{Declension::R,Declension::R,"с индексом"});
 
     operatorsPrepositions.insert("+","и");
     operatorsPrepositions.insert("-","и");
@@ -19,6 +20,7 @@ Operators::Operators()
     operatorsPrepositions.insert("^","над");
     operatorsPrepositions.insert("++","унарный");
     operatorsPrepositions.insert("--","унарный");
+    operatorsPrepositions.insert("[]","индекс");
 
 
     //именительный
@@ -34,6 +36,7 @@ Operators::Operators()
     operatorsIDecl.insert("^","результат побитового исключающего ИЛИ над");
     operatorsIDecl.insert("++","инкремент");
     operatorsIDecl.insert("--","декремент");
+    operatorsIDecl.insert("[]","элемент");
 
     //родительный
     operatorsRDecl.insert("+","суммы");
@@ -48,6 +51,7 @@ Operators::Operators()
     operatorsRDecl.insert("^","результата побитового исключающего ИЛИ над");
     operatorsRDecl.insert("++","инкремента");
     operatorsRDecl.insert("--","декремента");
+    operatorsRDecl.insert("[]","элемента");
 
     //винительный
     operatorsVDecl.insert("+","сумму");
@@ -62,6 +66,7 @@ Operators::Operators()
     operatorsVDecl.insert("^","результат побитового исключающего ИЛИ над");
     operatorsVDecl.insert("++","инкремент");
     operatorsVDecl.insert("--","декремент");
+    operatorsVDecl.insert("[]","элемент");
 
     //творительный
     operatorsTDecl.insert("+","суммой");
@@ -76,6 +81,7 @@ Operators::Operators()
     operatorsTDecl.insert("^","результатом побитового исключающего ИЛИ над");
     operatorsTDecl.insert("++","инкрементом");
     operatorsTDecl.insert("--","декрементом");
+    operatorsTDecl.insert("[]","элементом");
 }
 
 QString Operators::getOperatorByDecl(QString name,Declension::Declensions decl){
