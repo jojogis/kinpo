@@ -1,14 +1,15 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QJsonArray>
 #include "declension.h"
 #include "operators.h"
+#include "treereader.h"
 QTextStream cin(stdin);
 
-QHash<QString,QString> readDescribe(QString fileName);
-QJsonObject readTree(QString jsonFileName);
-QString treeWalker(QJsonObject obj,Declension::Declensions decl);
+QHash<QString,QString> readDescribe(QString fileName,QString &error);
+QJsonObject readTree(QString filename);
+QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl);
+
 bool useDecl = false;
 Declension decl;
 QHash<QString,QString> desc;
@@ -19,12 +20,12 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     setlocale(LC_ALL,"Russian");
     //ввод данных
-    QString fileJson;
+    QString fileTree;
     if(argc < 2){
         qDebug() << "введите файл с деревом";
-        cin >> fileJson;
+        cin >> fileTree;
     }else{
-        fileJson = QString(argv[1]);
+        fileTree = QString(argv[1]);
     }
     QString fileDescribe;
     if(argc < 3){
@@ -49,20 +50,21 @@ int main(int argc, char *argv[])
     //------------
 
     //читаем дерево
-    QJsonObject tree;
+    ExpressionNode tree;
+    QString error;
     try {
-        tree = readTree(a.applicationDirPath()+"/tree.json");
+        tree = TreeReader::readTree(a.applicationDirPath()+"/tree.json",error);
     } catch (int exep) {
-        if(exep == 1)qDebug() << "Ошибка открытия файла с деревом";
-        if(exep == 2)qDebug() << "Ошибка разбора файла с деревом";
+        if(exep == 1)qDebug() << "Недопустимый формат файла с деревом";
+        if(exep == 2)qDebug() << "Ошибка открытия файла с деревом: " + error;
+        if(exep == 3)qDebug() << "Ошибка разбора файла с деревом: " + error;
         return exep;
     }
-
     //читаем описание
     try {
-        desc = readDescribe(a.applicationDirPath()+"/desc.txt");
+        desc = readDescribe(a.applicationDirPath()+"/desc.txt",error);
     } catch (int exep) {
-        if(exep == 10)qDebug() << "Ошибка открытия файла с описанием";
+        if(exep == 10)qDebug() << "Ошибка открытия файла с описанием: "+error;
         return exep;
     }
 
@@ -72,14 +74,13 @@ int main(int argc, char *argv[])
     return a.exec();
 }
 
-QString treeWalker(QJsonObject obj,Declension::Declensions currentDecl){
-    qDebug() << obj.value("content").toString();
+QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl){
+    qDebug() << obj.name;
     //если текущий объект - листок
-    if(obj.value("child") == QJsonValue::Undefined){
-        QString el = obj.value("content").toString();
+    if(obj.child.count() == 0){
         //если есть описание для данного элемента
-        if(desc.contains(el)){
-            QString descEl = desc.value(el);
+        if(desc.contains(obj.name)){
+            QString descEl = desc.value(obj.name);
             if(useDecl){
                 return decl.getDeclension(descEl, currentDecl);
             }else{
@@ -87,35 +88,35 @@ QString treeWalker(QJsonObject obj,Declension::Declensions currentDecl){
             }
         }else{
             //иначе возвращаем имя элемента
-            return el;
+            return obj.name;
         }
     //иначе, если не листок
     }else{
-        QString operat = obj.value("content").toString();
         //если оператор - стандартный
-        if(operators.operatorsPrepositions.contains(operat)){
-            QString prep = operators.operatorsPrepositions.value(operat);
+        if(operators.operatorsPrepositions.contains(obj.name)){
+            QString prep = operators.operatorsPrepositions.value(obj.name);
             Preposition prepDecls = operators.prepositions.value(prep);
 
             //TODO переписать:
-            if(obj.value("child").toArray().count() == 2){
-                return operators.getOperatorByDecl(operat,currentDecl) + " "+
-                        treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev)+
+            if(obj.child.count() == 2){
+                return operators.getOperatorByDecl(obj.name,currentDecl) + " "+
+                        treeWalker(obj.child[0],prepDecls.declPrev)+
                         " "+ prepDecls.text +" "+
-                        treeWalker(obj.value("child").toArray().takeAt(1).toObject(),prepDecls.declNext);
-            }else if(obj.value("child").toArray().count() == 1){
-                return operators.getOperatorByDecl(operat,currentDecl) + " "+
-                        treeWalker(obj.value("child").toArray().takeAt(0).toObject(),prepDecls.declPrev);
+                        treeWalker(obj.child[1],prepDecls.declNext);
+            }else if(obj.child.count() == 1){
+                return operators.getOperatorByDecl(obj.name,currentDecl) + " "+
+                        treeWalker(obj.child[0],prepDecls.declPrev);
             }
         }
-    }
+    }1
 
 }
 
 
-QHash<QString,QString> readDescribe(QString fileName){
+QHash<QString,QString> readDescribe(QString fileName,QString &error){
     QFile file(fileName);
-    if(!file.open(QIODevice::ReadOnly |QIODevice::Text)){
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        error = file.errorString();
         throw 10;
     }
     QHash<QString,QString> res;
@@ -128,26 +129,3 @@ QHash<QString,QString> readDescribe(QString fileName){
     return res;
 }
 
-/*!
- * Читает дерево разбора выражения из файла
- * \param [in] jsonFileName - имя файла
- * \return дерево разбора
-*/
-QJsonObject readTree(QString jsonFileName){
-    //парсим дерево
-    // Создаём объект файла и открываем его на чтение
-    QFile jsonFile(jsonFileName);
-    if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        throw 1;
-    }
-    // Считываем весь файл
-    QString saveData = jsonFile.readAll();
-    // Создаём QJsonDocument
-    QJsonDocument jsonDocument(QJsonDocument::fromJson(saveData.toUtf8()));
-    if(jsonDocument.isNull()){
-        throw 2;
-    }
-    // Из которого выделяем объект в текущий рабочий QJsonObject
-    return jsonDocument.object();
-}
