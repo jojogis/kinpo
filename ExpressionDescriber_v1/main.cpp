@@ -58,13 +58,14 @@ int main(int argc, char *argv[])
         if(exep == 1)qDebug() << "Недопустимый формат файла с деревом";
         if(exep == 2)qDebug() << "Ошибка открытия файла с деревом: " + error;
         if(exep == 3)qDebug() << "Ошибка разбора файла с деревом: " + error;
+        if(exep == 5)qDebug() << "Ошибка разбора файла с деревом: Отсутствует аттрибут name";
         return exep;
     }
     //читаем описание
     try {
         desc = readDescribe(a.applicationDirPath()+"/desc.txt",error);
     } catch (int exep) {
-        if(exep == 10)qDebug() << "Ошибка открытия файла с описанием: "+error;
+        if(exep == 4)qDebug() << "Ошибка открытия файла с описанием: "+error;
         return exep;
     }
 
@@ -96,7 +97,6 @@ QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl){
         if(operators.operatorsPrepositions.contains(obj.name)){
             QString prep = operators.operatorsPrepositions.value(obj.name);
             Preposition prepDecls = operators.prepositions.value(prep);
-
             //TODO переписать:
             if(obj.child.count() == 2){
                 return operators.getOperatorByDecl(obj.name,currentDecl) + " "+
@@ -108,7 +108,7 @@ QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl){
                         treeWalker(obj.child[0],prepDecls.declPrev);
             }
         }
-    }1
+    }
 
 }
 
@@ -117,7 +117,7 @@ QHash<QString,QString> readDescribe(QString fileName,QString &error){
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
         error = file.errorString();
-        throw 10;
+        throw 4;
     }
     QHash<QString,QString> res;
     while(!file.atEnd())

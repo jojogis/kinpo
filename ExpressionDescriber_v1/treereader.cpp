@@ -76,17 +76,22 @@ ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
     if(node.hasChildNodes()){
         QDomNodeList childs = node.childNodes();
         for(int i = 0; i< childs.count();i++){
+            if(childs.at(i).toElement().tagName() == "node")
             nodeRes.child.append(treeWalkerXml(childs.at(i)));
         }
 
     }
-    nodeRes.name = node.toElement().attribute("name");
+    if(node.toElement().hasAttribute("name"))
+        nodeRes.name = node.toElement().attribute("name");
+    else
+        throw 5;
     return nodeRes;
 }
 
 ExpressionNode TreeReader::treeWalker(QJsonObject obj){
     ExpressionNode node;
-    node.name = obj.value("content").toString();
+    if(!obj.contains("name"))throw 5;
+    node.name = obj.value("name").toString();
     if(obj.value("child") != QJsonValue::Undefined){
         for(int i = 0;i < obj.value("child").toArray().count();i++){
             node.child.append(treeWalker(obj.value("child").toArray().takeAt(i).toObject()));

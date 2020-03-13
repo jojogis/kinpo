@@ -84,6 +84,13 @@ Operators::Operators()
     operatorsTDecl.insert("[]","элементом");
 }
 
+
+/*!
+ * Возвращает описание оператора в указанном падеже
+ * \param [in] name - оператор
+ * \param [in] decl - падеж
+ * \return описание оператора
+*/
 QString Operators::getOperatorByDecl(QString name,Declension::Declensions decl){
     switch(decl){
         case Declension::I:
