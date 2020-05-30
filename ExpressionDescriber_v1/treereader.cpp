@@ -67,7 +67,7 @@ ExpressionNode TreeReader::readJSON(QString data,QString &error){
     }
     // Из которого выделяем объект в текущий рабочий QJsonObject
     ExpressionNode root;
-    return treeWalker(jsonDocument.object());
+    return treeWalkerJSON(jsonDocument.object());
 }
 
 ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
@@ -88,13 +88,13 @@ ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
     return nodeRes;
 }
 
-ExpressionNode TreeReader::treeWalker(QJsonObject obj){
+ExpressionNode TreeReader::treeWalkerJSON(QJsonObject obj){
     ExpressionNode node;
     if(!obj.contains("name"))throw 5;
     node.name = obj.value("name").toString();
     if(obj.value("child") != QJsonValue::Undefined){
         for(int i = 0;i < obj.value("child").toArray().count();i++){
-            node.child.append(treeWalker(obj.value("child").toArray().takeAt(i).toObject()));
+            node.child.append(treeWalkerJSON(obj.value("child").toArray().takeAt(i).toObject()));
         }
     }
     return node;

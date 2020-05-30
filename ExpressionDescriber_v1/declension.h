@@ -18,7 +18,7 @@ public:
 
     Declension();
     QHash<QString, QStringList> cache;
-    QString getDeclension(QString word, Declensions decl);
+    QString getDeclension(QString word, Declensions decl,bool useDecl);
     ~Declension();
 
 };

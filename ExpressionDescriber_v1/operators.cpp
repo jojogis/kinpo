@@ -7,6 +7,7 @@ Operators::Operators()
     prepositions.insert("над",{Declension::T,Declension::T,"и"});
     prepositions.insert("унарный",{Declension::R,Declension::R,""});
     prepositions.insert("индекс",{Declension::R,Declension::R,"с индексом"});
+    prepositions.insert("присвоить",{Declension::D,Declension::R,"значение"});
 
     operatorsPrepositions.insert("+","и");
     operatorsPrepositions.insert("-","и");
@@ -21,6 +22,7 @@ Operators::Operators()
     operatorsPrepositions.insert("++","унарный");
     operatorsPrepositions.insert("--","унарный");
     operatorsPrepositions.insert("[]","индекс");
+    operatorsPrepositions.insert("=","присвоить");
 
 
     //именительный
@@ -37,6 +39,7 @@ Operators::Operators()
     operatorsIDecl.insert("++","инкремент");
     operatorsIDecl.insert("--","декремент");
     operatorsIDecl.insert("[]","элемент");
+    operatorsIDecl.insert("=","присвоить");
 
     //родительный
     operatorsRDecl.insert("+","суммы");

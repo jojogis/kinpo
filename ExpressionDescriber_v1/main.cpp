@@ -7,12 +7,14 @@
 QTextStream cin(stdin);
 
 QHash<QString,QString> readDescribe(QString fileName,QString &error);
+QHash<QString,QStringList> readFuncDescribe(QString fileName,QString &error);
 QJsonObject readTree(QString filename);
 QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl);
 
 bool useDecl = false;
 Declension decl;
 QHash<QString,QString> desc;
+QHash<QString,QStringList> funcDesc;
 Operators operators;
 
 int main(int argc, char *argv[])
@@ -29,17 +31,24 @@ int main(int argc, char *argv[])
     }
     QString fileDescribe;
     if(argc < 3){
-    qDebug() << "введите файл с описанием";
+    qDebug() << "введите файл с описанием элементов";
     cin >> fileDescribe;
     }else{
         fileDescribe = QString(argv[2]);
     }
+    QString fileFuncDescribe;
+    if(argc <4){
+    qDebug() << "введите файл с описанием функций";
+    cin >> fileFuncDescribe;
+    }else{
+        fileFuncDescribe = QString(argv[3]);
+    }
     QString useDeclStr;
-    if(argc < 4){
+    if(argc < 5){
         qDebug() << "использовать склонение? y/n";
         cin >> useDeclStr;
     }else{
-        useDeclStr = QString(argv[3]);
+        useDeclStr = QString(argv[4]);
     }
 
     if(useDeclStr == "y" || useDeclStr == ""){
@@ -64,13 +73,13 @@ int main(int argc, char *argv[])
     //читаем описание
     try {
         desc = readDescribe(a.applicationDirPath()+"/desc.txt",error);
+        funcDesc = readFuncDescribe(a.applicationDirPath()+"/descFunc.txt",error);
     } catch (int exep) {
         if(exep == 4)qDebug() << "Ошибка открытия файла с описанием: "+error;
         return exep;
     }
 
     qDebug() << treeWalker(tree,Declension::I);
-
 
     return a.exec();
 }
@@ -82,14 +91,10 @@ QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl){
         //если есть описание для данного элемента
         if(desc.contains(obj.name)){
             QString descEl = desc.value(obj.name);
-            if(useDecl){
-                return decl.getDeclension(descEl, currentDecl);
-            }else{
-                return descEl;
-            }
+            return decl.getDeclension(descEl, currentDecl,useDecl);
         }else{
             //иначе возвращаем имя элемента
-            return obj.name;
+            return "'"+obj.name+"'";
         }
     //иначе, если не листок
     }else{
@@ -107,12 +112,50 @@ QString treeWalker(ExpressionNode obj,Declension::Declensions currentDecl){
                 return operators.getOperatorByDecl(obj.name,currentDecl) + " "+
                         treeWalker(obj.child[0],prepDecls.declPrev);
             }
+        }else if(funcDesc.contains(obj.name)){//если для функции задано описание
+            QString descFunc = funcDesc.value(obj.name)[0];
+            descFunc = decl.getDeclension(descFunc,currentDecl,useDecl);
+            QString childs = "";
+            for(int i=0;i<obj.child.count();i++){
+                childs += " и " + treeWalker(obj.child[i],Declension::R);
+                if(funcDesc.value(obj.name)[i+1] != "-"){
+                    childs += ", в качестве " + decl.getDeclension(funcDesc.value(obj.name)[i+1],Declension::R,useDecl);
+                }
+            }
+            childs.remove(0,3);
+            return descFunc + " от " + childs;
+        }else{//если для оператора нет описания
+            QString childs = "";
+            for(int i=0;i<obj.child.count();i++){
+                childs += " и " + treeWalker(obj.child[i],Declension::R);
+            }
+            childs.remove(0,3);
+            return obj.name + " от " + childs;
         }
     }
 
 }
 
-
+QHash<QString,QStringList> readFuncDescribe(QString fileName,QString &error){
+    QFile file(fileName);
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+        error = file.errorString();
+        throw 4;
+    }
+    QHash<QString,QStringList> res;
+    while(!file.atEnd()){
+        QString funcName = file.readLine();
+        int argCount = funcName.split(" ")[1].toInt();
+        funcName = funcName.split(" ")[0].remove("\n");
+        QStringList func;
+        for(int i = 0;i<argCount+1;i++){
+            QString el = file.readLine();
+            func.append(el.remove("\n"));
+        }
+        res.insert(funcName,func);
+    }
+    return res;
+}
 QHash<QString,QString> readDescribe(QString fileName,QString &error){
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -124,7 +167,8 @@ QHash<QString,QString> readDescribe(QString fileName,QString &error){
     {
         QString el = file.readLine();
         QString desc = file.readLine();
-        res.insert(el.remove("\n"),desc.remove("\n"));
+        if(el.length() > 0 && desc.length() > 0)
+            res.insert(el.remove("\n"),desc.remove("\n"));
     }
     return res;
 }

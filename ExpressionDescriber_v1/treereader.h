@@ -19,7 +19,7 @@ public:
     static ExpressionNode readXml(QString filename,QString &error);
     static ExpressionNode readJSON(QString filename,QString &error);
     static ExpressionNode readTree(QString filename,QString &error);
-    static ExpressionNode treeWalker(QJsonObject obj);
+    static ExpressionNode treeWalkerJSON(QJsonObject obj);
     static ExpressionNode treeWalkerXml(QDomNode node);
 };
 
