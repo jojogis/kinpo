@@ -3,7 +3,6 @@ QT += network
 QT += xml
 CONFIG += c++11 console
 CONFIG -= app_bundle
-
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -19,7 +18,8 @@ SOURCES += \
         declension.cpp \
         main.cpp \
         operators.cpp \
-        treereader.cpp
+        treereader.cpp \
+        treewalker.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -29,4 +29,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     declension.h \
     operators.h \
-    treereader.h
+    treereader.h \
+    treewalker.h
