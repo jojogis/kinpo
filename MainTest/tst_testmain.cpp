@@ -25,6 +25,14 @@ private slots:
     void one_func();
     void no_desc();
     void full();
+    void main_1();
+    void main_2();
+    void main_3();
+    void main_4();
+    void main_5();
+    void main_6();
+    void main_7();
+    void main_8();
 };
 
 TestMain::TestMain()
@@ -98,7 +106,77 @@ void TestMain::one_elem()
     walker.desc.insert("x","абсцисса");
     QCOMPARE( walker.treeWalker(node,Declension::I), "абсцисса");
 }
+void TestMain::main_1(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/1.3.xml tests/1.1.txt tests/1.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"абсцисса ");
+}
 
+void TestMain::main_2(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/2.3.xml tests/2.1.txt tests/2.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить абсцисса значение произведения абсцисса на ордината");
+}
+
+void TestMain::main_3(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/3.3.xml tests/3.1.txt tests/3.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить абсцисса значение 'y'");
+}
+
+void TestMain::main_4(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/4.3.xml tests/4.1.txt tests/4.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить 'x' значение log от 'x' и 'y'");
+}
+
+void TestMain::main_5(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/5.3.xml tests/5.1.txt tests/5.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить 'x' значение логарифм от 'x', в качестве число и 'y', в качестве основание");
+}
+
+void TestMain::main_6(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/6.3.xml tests/6.1.txt tests/6.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить 'x' значение логарифм от 'x' и 'y', в качестве основание");
+}
+
+void TestMain::main_7(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/7.3.xml tests/7.1.txt tests/7.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"присвоить 'x' значение элемента 'y' с индексом 'i'");
+}
+
+void TestMain::main_8(){
+    QProcess *process = new QProcess();
+    process->start("../ExpressionDescriber_v1/debug/ExpressionDescriber_v1.exe tests/8.3.xml tests/8.1.txt tests/8.2.txt n");
+    process->waitForFinished();
+    QByteArray res = process->readAll();
+    QString resStr = QString::fromLocal8Bit(res);
+    QCOMPARE(resStr,"остаток от деления результата побитового ИЛИ над абсцисса и логарифм от абсцисса и ордината, в качестве основание на декремент абсцисса");
+}
 
 QTEST_MAIN(TestMain);
 #include "debug/tst_testmain.moc"

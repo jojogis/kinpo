@@ -4,7 +4,12 @@ TreeWalker::TreeWalker()
 {
 
 }
-
+/*!
+Рекурсивная функция для составления описания выражения
+\param[in] obj текущая вершина дерева
+\param[in] currentDecl падеж, в котором нужно вернуть описание для текущей вершины
+\return описание поддерева, корнем которого является переданная вершина
+*/
 QString TreeWalker::treeWalker(ExpressionNode obj, Declension::Declensions currentDecl)
 {
     //если текущий объект - листок

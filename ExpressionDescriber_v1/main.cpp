@@ -4,8 +4,10 @@
 #include "declension.h"
 #include "operators.h"
 #include "treereader.h"
+#include <iostream>
 #include "treewalker.h"
 QTextStream cin(stdin);
+QTextStream cout(stdout);
 
 QHash<QString,QString> readDescribe(QString fileName,QString &error);
 QHash<QString,QStringList> readFuncDescribe(QString fileName,QString &error);
@@ -59,29 +61,39 @@ int main(int argc, char *argv[])
     ExpressionNode tree;
     QString error;
     try {
-        tree = TreeReader::readTree(a.applicationDirPath()+"/tree.json",error);
+        tree = TreeReader::readTree(fileTree,error);
     } catch (int exep) {
         if(exep == 1)qDebug() << "Недопустимый формат файла с деревом";
         if(exep == 2)qDebug() << "Ошибка открытия файла с деревом: " + error;
         if(exep == 3)qDebug() << "Ошибка разбора файла с деревом: " + error;
         if(exep == 5)qDebug() << "Ошибка разбора файла с деревом: Отсутствует аттрибут name";
-        return exep;
+        return 0;
     }
     //читаем описание
     try {
-        walker.desc = readDescribe(a.applicationDirPath()+"/desc.txt",error);
-        walker.funcDesc = readFuncDescribe(a.applicationDirPath()+"/descFunc.txt",error);
+        walker.desc = readDescribe(fileDescribe,error);
     } catch (int exep) {
         if(exep == 4)qDebug() << "Ошибка открытия файла с описанием: "+error;
-        return exep;
+        return 0;
+    }
+    try {
+        walker.funcDesc = readFuncDescribe(fileFuncDescribe,error);
+    } catch (int exep) {
+        if(exep == 4)qDebug() << "Ошибка открытия файла с описанием функций: "+error;
+        return 0;
     }
 
-    qDebug() << walker.treeWalker(tree,Declension::I);
+    cout << walker.treeWalker(tree,Declension::I).toUtf8();
 
-    return a.exec();
+    return 0;
 }
 
-
+/*!
+Функия чтения описания функций
+\param[in] fileName путь к файлу с описанием функций
+\param[in|out] error текст ошибки
+\return описания функций
+*/
 QHash<QString,QStringList> readFuncDescribe(QString fileName,QString &error){
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -100,8 +112,15 @@ QHash<QString,QStringList> readFuncDescribe(QString fileName,QString &error){
         }
         res.insert(funcName,func);
     }
+    file.close();
     return res;
 }
+/*!
+Функия чтения описания элементов
+\param[in] fileName путь к файлу с описанием элементов
+\param[in|out] error текст ошибки
+\return описания элементов
+*/
 QHash<QString,QString> readDescribe(QString fileName,QString &error){
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -116,6 +135,7 @@ QHash<QString,QString> readDescribe(QString fileName,QString &error){
         if(el.length() > 0 && desc.length() > 0)
             res.insert(el.remove("\n"),desc.remove("\n"));
     }
+    file.close();
     return res;
 }
 

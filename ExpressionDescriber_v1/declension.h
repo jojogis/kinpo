@@ -10,14 +10,25 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+
+/*!
+    \brief Класс, отвечающий за склонение элементов
+*/
 class Declension : QObject
 {
 
 public:
-    enum Declensions {I,R,D,V,T,P};
+    /// Набор возможных состояний объекта
+    enum Declensions {I,///< Именительный
+                      R,///< Родительный
+                      D,///< Дательный
+                      V,///< Винительный
+                      T,///< Творительный
+                      P///< Предложный
+                     };
 
     Declension();
-    QHash<QString, QStringList> cache;
+    QHash<QString, QStringList> cache;///< Кэш запросов склонений
     QString getDeclension(QString word, Declensions decl,bool useDecl);
     ~Declension();
 

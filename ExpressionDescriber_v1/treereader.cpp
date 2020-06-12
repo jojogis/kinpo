@@ -13,6 +13,8 @@ TreeReader::TreeReader()
  * \param [in] filename - имя файла
  * \param [out] error - строка с ошибкой
  * \return дерево разбора
+ * \throw 2 ошибка открытия файла
+ * \throw 1 неподдерживаемый формат
 */
 ExpressionNode TreeReader::readTree(QString filename,QString &error){
     //читаем файл
@@ -23,12 +25,12 @@ ExpressionNode TreeReader::readTree(QString filename,QString &error){
         throw 2;
     }
     QString data = file.readAll();
-
+    file.close();
     //проверяем формат
     QFileInfo info(filename);
-    if(info.completeSuffix() == "json"){
+    if(info.suffix() == "json"){
         return readJSON(data,error);
-    }else if(info.completeSuffix() == "xml"){
+    }else if(info.suffix() == "xml"){
         return readXml(data,error);
     }else{
         throw 1;
@@ -40,6 +42,7 @@ ExpressionNode TreeReader::readTree(QString filename,QString &error){
  * \param [in] filename - имя файла
  * \param [out] error - строка с ошибкой
  * \return дерево разбора
+ * \throw 3 ошибка разбора xml
 */
 ExpressionNode TreeReader::readXml(QString data,QString &error){
     QDomDocument doc("doc");
@@ -56,6 +59,7 @@ ExpressionNode TreeReader::readXml(QString data,QString &error){
  * \param [in] filename - имя файла
  * \param [out] error - строка с ошибкой
  * \return дерево разбора
+ * \throw 3 ошибка разбора json
 */
 ExpressionNode TreeReader::readJSON(QString data,QString &error){
     // Создаём QJsonDocument
@@ -70,6 +74,13 @@ ExpressionNode TreeReader::readJSON(QString data,QString &error){
     return treeWalkerJSON(jsonDocument.object());
 }
 
+
+/*!
+ * Обходит DOM дерево и возвращает дерево разбора в универсальном формате
+ * \param [in] node - DOM дерево
+ * \return дерево разбора
+ * \throw 5 одна из вершм не содержит аттрибут name
+*/
 ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
     ExpressionNode nodeRes;
 
@@ -79,7 +90,6 @@ ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
             if(childs.at(i).toElement().tagName() == "node")
             nodeRes.child.append(treeWalkerXml(childs.at(i)));
         }
-
     }
     if(node.toElement().hasAttribute("name"))
         nodeRes.name = node.toElement().attribute("name");
@@ -87,7 +97,12 @@ ExpressionNode TreeReader::treeWalkerXml(QDomNode node){
         throw 5;
     return nodeRes;
 }
-
+/*!
+ * Обходит JSON представление и возвращает дерево разбора в универсальном формате
+ * \param [in] obj - JSON объект
+ * \return дерево разбора
+ * \throw 5 одна из вершм не содержит аттрибут name
+*/
 ExpressionNode TreeReader::treeWalkerJSON(QJsonObject obj){
     ExpressionNode node;
     if(!obj.contains("name"))throw 5;

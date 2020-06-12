@@ -6,15 +6,17 @@
 #include <QList>
 #include <qstring.h>
 
-
+/// Структура, описывающая вершину
 struct ExpressionNode{
-    QString name;
-    QList<ExpressionNode> child;
+    QString name;///< имя элемента или функции
+    QList<ExpressionNode> child;///< дочерние вершины
 };
+/*!
+    \brief Класс инкапсулирующий чтение дерева разбора выражения
+*/
 class TreeReader
 {
 public:
-
     TreeReader();
     static ExpressionNode readXml(QString filename,QString &error);
     static ExpressionNode readJSON(QString filename,QString &error);
