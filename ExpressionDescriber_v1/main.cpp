@@ -86,8 +86,17 @@ int main(int argc, char *argv[])
         if(exep == 4)qDebug() << "Ошибка открытия файла с описанием функций: "+error;
         return 0;
     }
+    QByteArray result = walker.treeWalker(tree,Declension::I).toUtf8();
+    if(argc == 6){
+        QFile output(argv[5]);
+        if(output.open(QFile::WriteOnly)){
+            output.write(result);
+            output.close();
+        }
+    }else{
+        cout << result;
+    }
 
-    cout << walker.treeWalker(tree,Declension::I).toUtf8();
 
     return 0;
 }
