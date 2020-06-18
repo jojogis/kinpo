@@ -22,6 +22,12 @@ public:
     QHash<QString,QString> operatorsRDecl;///< операторы в родительном падеже
     QHash<QString,QString> operatorsVDecl;///< операторы в винительном падеже
     QHash<QString,QString> operatorsTDecl;///< операторы в творительном падеже
+    /*!
+     * Возвращает описание оператора в указанном падеже
+     * \param [in] name - оператор
+     * \param [in] decl - падеж
+     * \return описание оператора
+    */
     QString getOperatorByDecl(QString name,Declension::Declensions decl);
 };
 

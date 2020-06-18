@@ -29,6 +29,12 @@ public:
 
     Declension();
     QHash<QString, QStringList> cache;///< Кэш запросов склонений
+    /*!
+     *  склоняет заданное слово в заданный падеж
+     *  \param [in] word - слово которое сконяем, в именительном падеже
+     *  \param [in] decl - нужный падеж
+     *  \return - слово в новом падеже
+     */
     QString getDeclension(QString word, Declensions decl,bool useDecl);
     ~Declension();
 

@@ -1,3 +1,7 @@
+/*!
+     \file
+    \brief Класс, содержащий описания предлогов
+*/
 #include "operators.h"
 
 Operators::Operators()
@@ -23,6 +27,21 @@ Operators::Operators()
     operatorsPrepositions.insert("--","унарный");
     operatorsPrepositions.insert("[]","индекс");
     operatorsPrepositions.insert("=","присвоить");
+    operatorsPrepositions.insert("*=","присвоить");
+    operatorsPrepositions.insert("/=","присвоить");
+    operatorsPrepositions.insert("+=","присвоить");
+    operatorsPrepositions.insert("-=","присвоить");
+    operatorsPrepositions.insert("!","унарный");
+    operatorsPrepositions.insert("&","унарный");
+    operatorsPrepositions.insert("~","унарный");
+    operatorsPrepositions.insert("*","унарный");
+    operatorsPrepositions.insert("==","и");
+    operatorsPrepositions.insert("!=","и");
+    operatorsPrepositions.insert(">","и");
+    operatorsPrepositions.insert("<","и");
+    operatorsPrepositions.insert("&&","и");
+    operatorsPrepositions.insert("||","и");
+
 
 
     //именительный
@@ -40,6 +59,20 @@ Operators::Operators()
     operatorsIDecl.insert("--","декремент");
     operatorsIDecl.insert("[]","элемент");
     operatorsIDecl.insert("=","присвоить");
+    operatorsIDecl.insert("*=","присвоить с умножением");
+    operatorsIDecl.insert("/=","присвоить с делением");
+    operatorsIDecl.insert("+=","присвоить с суммированием");
+    operatorsIDecl.insert("-=","присвоить с разностью");
+    operatorsIDecl.insert("!","отрицание");
+    operatorsIDecl.insert("&","адрес");
+    operatorsIDecl.insert("~","результат побитового отрицания над");
+    operatorsIDecl.insert("*","элемент по адресу");
+    operatorsIDecl.insert("==","результат сравнения 'равно'");
+    operatorsIDecl.insert("!=","результат сравнения 'неравно'");
+    operatorsIDecl.insert(">","результат сравнения 'больше'");
+    operatorsIDecl.insert("<","результат сравнения 'меньше'");
+    operatorsIDecl.insert("&&","результат логического И");
+    operatorsIDecl.insert("||","результат логического ИЛИ");
 
     //родительный
     operatorsRDecl.insert("+","суммы");
@@ -55,6 +88,16 @@ Operators::Operators()
     operatorsRDecl.insert("++","инкремента");
     operatorsRDecl.insert("--","декремента");
     operatorsRDecl.insert("[]","элемента");
+    operatorsRDecl.insert("!","отрицания");
+    operatorsRDecl.insert("&","адреса");
+    operatorsRDecl.insert("~","результата побитового отрицания над");
+    operatorsRDecl.insert("*","элемента по адресу");
+    operatorsRDecl.insert("==","результата сравнения 'равно'");
+    operatorsRDecl.insert("!=","результата сравнения 'неравно'");
+    operatorsRDecl.insert(">","результата сравнения 'больше'");
+    operatorsRDecl.insert("<","результата сравнения 'меньше'");
+    operatorsRDecl.insert("&&","результата логического И");
+    operatorsRDecl.insert("||","результата логического ИЛИ");
 
     //винительный
     operatorsVDecl.insert("+","сумму");
@@ -70,6 +113,16 @@ Operators::Operators()
     operatorsVDecl.insert("++","инкремент");
     operatorsVDecl.insert("--","декремент");
     operatorsVDecl.insert("[]","элемент");
+    operatorsVDecl.insert("!","отрицание");
+    operatorsVDecl.insert("&","адрес");
+    operatorsVDecl.insert("~","результат побитового отрицания над");
+    operatorsVDecl.insert("*","элемент по адресу");
+    operatorsVDecl.insert("==","результат сравнения 'равно'");
+    operatorsVDecl.insert("!=","результат сравнения 'неравно'");
+    operatorsVDecl.insert(">","результат сравнения 'больше'");
+    operatorsVDecl.insert("<","результат сравнения 'меньше'");
+    operatorsVDecl.insert("&&","результат логического И");
+    operatorsVDecl.insert("||","результат логического ИЛИ");
 
     //творительный
     operatorsTDecl.insert("+","суммой");
@@ -85,6 +138,16 @@ Operators::Operators()
     operatorsTDecl.insert("++","инкрементом");
     operatorsTDecl.insert("--","декрементом");
     operatorsTDecl.insert("[]","элементом");
+    operatorsTDecl.insert("!","отрицанием");
+    operatorsTDecl.insert("&","адресом");
+    operatorsTDecl.insert("~","результатом побитового отрицания над");
+    operatorsTDecl.insert("*","элементом по адресу");
+    operatorsTDecl.insert("==","результатом сравнения 'равно'");
+    operatorsTDecl.insert("!=","результатом сравнения 'неравно'");
+    operatorsTDecl.insert(">","результатом сравнения 'больше'");
+    operatorsTDecl.insert("<","результатом сравнения 'меньше'");
+    operatorsTDecl.insert("&&","результатом логического И");
+    operatorsTDecl.insert("||","результатом логического ИЛИ");
 }
 
 

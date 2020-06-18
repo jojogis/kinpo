@@ -1,3 +1,7 @@
+/*!
+  \file
+    \brief Класс, инкапсулирующий обход дерева и составление описания
+*/
 #include "treewalker.h"
 
 TreeWalker::TreeWalker()

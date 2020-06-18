@@ -1,3 +1,7 @@
+/*!
+    \file
+    \brief Главная функция
+*/
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>

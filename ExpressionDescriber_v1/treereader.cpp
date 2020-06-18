@@ -1,3 +1,7 @@
+/*!
+  \file
+    \brief Класс инкапсулирующий чтение дерева разбора выражения
+*/
 #include "treereader.h"
 
 #include <QFile>
